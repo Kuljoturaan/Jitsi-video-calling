@@ -1,6 +1,8 @@
 import { useEffect, useRef } from "react";
 
-const VideoCall = ({ roomName, userName }) => {
+const APP_ID = "vpaas-magic-cookie-791b9d826e0940dd90a24c1e591a1126";
+
+const VideoCall = ({ roomName, userName, jwtToken }) => {
   const jitsiRef = useRef(null);
   const apiRef = useRef(null);
 
@@ -11,10 +13,12 @@ const VideoCall = ({ roomName, userName }) => {
       return;
     }
 
-    const domain = "meet.jit.si";
+    const domain = "8x8.vc";
+    const formattedRoomName = `${APP_ID}/${roomName}`;
 
     const options = {
-      roomName,
+      roomName: formattedRoomName,
+      jwt: jwtToken,
       width: "100%",
       height: 600,
       parentNode: jitsiRef.current,
@@ -24,10 +28,12 @@ const VideoCall = ({ roomName, userName }) => {
       configOverwrite: {
         startWithAudioMuted: true,
         startWithVideoMuted: true,
+        enableWelcomePage: false,
       },
       interfaceConfigOverwrite: {
         SHOW_JITSI_WATERMARK: false,
         SHOW_WATERMARK_FOR_GUESTS: false,
+        // TOOLBAR_BUTTONS: ["microphone", "camera", "hangup", "chat"],
       },
     };
 
@@ -36,7 +42,7 @@ const VideoCall = ({ roomName, userName }) => {
     return () => {
       apiRef.current?.dispose();
     };
-  }, [roomName, userName]);
+  }, [roomName, userName, jwtToken]);
 
   return <div ref={jitsiRef} />;
 };
