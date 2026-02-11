@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import "../styles/VideoCall.css";
 
 const APP_ID = "vpaas-magic-cookie-791b9d826e0940dd90a24c1e591a1126";
 
@@ -20,7 +21,7 @@ const VideoCall = ({ roomName, userName, jwtToken }) => {
       roomName: formattedRoomName,
       jwt: jwtToken,
       width: "100%",
-      height: 600,
+      height: "100%",
       parentNode: jitsiRef.current,
       userInfo: {
         displayName: userName,
@@ -29,11 +30,11 @@ const VideoCall = ({ roomName, userName, jwtToken }) => {
         startWithAudioMuted: true,
         startWithVideoMuted: true,
         enableWelcomePage: false,
+        hideWatermark: true,
       },
       interfaceConfigOverwrite: {
         SHOW_JITSI_WATERMARK: false,
         SHOW_WATERMARK_FOR_GUESTS: false,
-        // TOOLBAR_BUTTONS: ["microphone", "camera", "hangup", "chat"],
       },
     };
 
@@ -44,7 +45,17 @@ const VideoCall = ({ roomName, userName, jwtToken }) => {
     };
   }, [roomName, userName, jwtToken]);
 
-  return <div ref={jitsiRef} />;
+  return (
+    <div className="video-call-wrapper">
+      <img
+        src={`${window.location.origin}/Skillverse-Circle.png`}
+        alt="SkillVerse-Logo"
+        className="custom-jitsi-logo"
+      />
+
+      <div ref={jitsiRef} className="jitsi-embed-container" />
+    </div>
+  );
 };
 
 export default VideoCall;
