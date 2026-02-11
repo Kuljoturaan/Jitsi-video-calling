@@ -1,0 +1,16 @@
+.pay-box {
+  border: 1px solid #ddd;
+  padding: 30px;
+  width: 300px;
+  margin: 50px auto;
+  text-align: center;
+  border-radius: 8px;
+}
+.btn-pay {
+  background: #3399cc;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 4px;
+}
