@@ -1,6 +1,6 @@
 import "./App.css";
-import VideoCall from "./component/VideoCall";
-// import Payment from "./payment";
+import VideoCall from "./component/Jitsi-Video-calling/VideoCall";
+// import Payment from "./component/Razorpay-payment/payment";
 
 function App() {
   return (
@@ -13,6 +13,7 @@ function App() {
         }
       />
     </div>
+    
     // <div>
     //   <Payment />
     // </div>

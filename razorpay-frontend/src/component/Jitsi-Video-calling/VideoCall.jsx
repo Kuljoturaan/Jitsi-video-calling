@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import "../styles/VideoCall.css";
+import "../Jitsi-Video-calling/styles/VideoCall.css";
 
 const APP_ID = "vpaas-magic-cookie-791b9d826e0940dd90a24c1e591a1126";
 
@@ -52,7 +52,6 @@ const VideoCall = ({ roomName, userName, jwtToken }) => {
         alt="SkillVerse-Logo"
         className="custom-jitsi-logo"
       />
-
       <div ref={jitsiRef} className="jitsi-embed-container" />
     </div>
   );
