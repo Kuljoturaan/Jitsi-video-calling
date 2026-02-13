@@ -3,7 +3,12 @@ import "./App.css";
 // import Payment from "./component/Razorpay-payment/payment";
 import ZoomMeetings from "./component/zoom-meeting/ZoomMeetings";
 
-import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useNavigate,
+} from "react-router-dom";
 
 const Home = () => {
   const navigate = useNavigate();

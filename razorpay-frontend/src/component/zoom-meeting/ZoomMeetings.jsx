@@ -1,60 +1,98 @@
-import { ZoomMtg } from "@zoomus/websdk";
-import "@zoomus/websdk/dist/css/bootstrap.css";
-import "@zoomus/websdk/dist/css/react-select.css";
+import { useEffect, useRef } from "react";
+import ZoomMtgEmbedded from "@zoom/meetingsdk/embedded";
 import "./styles/ZoomMeetings.css";
-import { useEffect } from "react";
-
-ZoomMtg.setZoomJSLib("https://source.zoom.us/2.18.0/lib", "/av");
-ZoomMtg.preLoadWasm();
-ZoomMtg.prepareWebSDK();
 
 const ZoomMeetings = () => {
+  const isMeetingStarted = useRef(false);
+
   useEffect(() => {
+    if (isMeetingStarted.current) return;
+    isMeetingStarted.current = true;
+
     joinMeeting();
   }, []);
+
   const joinMeeting = async () => {
-    const meetingNumber = "86296229680";
-    const passWord = "HtM41q";
+    try {
+      console.log("🟡 joinMeeting() started");
 
-    const res = await fetch("http://localhost:5000/api/zoom-signature", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
+      const meetingNumber = "82101008895";
+      const staticPassword = "123456";
+
+      console.log("📌 Meeting Details:", {
         meetingNumber,
-        userEmail: process.env.REACT_APP_ADMIN_EMAIL,
-      }),
-    });
+        staticPassword,
+      });
 
-    const result = await res.json();
-    console.log("Full API Response:", result);
+      console.log("🌐 Calling backend for signature...");
 
-    if (!result.success) {
-      alert("Signature error");
-      return;
-    }
-
-    const { signature, sdkKey, role } = result.data[0];
-    console.log("✅ Signature Received:", signature);
-    console.log("✅ SDK Key:", sdkKey);
-    console.log("✅ Role:", role);
-
-    ZoomMtg.init({
-      leaveUrl: window.location.origin,
-      patchJsMedia: true,
-      success: () => {
-        ZoomMtg.join({
-          sdkKey,
-          signature,
+      const res = await fetch("http://localhost:5000/api/zoom-signature", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
           meetingNumber,
-          userName: role === 1 ? "Teacher" : "Student",
-          passWord,
-          success: () => console.log("Meeting Joined"),
-          error: (e) => console.error("Join Error", e),
-        });
-      },
-      error: (e) => console.error("Init Error", e),
-    });
+          userEmail: "uraan.kuljot@gmail.com",
+        }),
+      });
+
+      console.log("📥 Raw response from backend:", res);
+
+      const result = await res.json();
+      console.log("📦 Parsed API Response:", result);
+
+      // --- BACKEND DATA INSPECTION ---
+      console.log("🔍 ========== BACKEND DATA CHECK ==========");
+      console.log("Full Response Object:", result);
+
+      if (!result.success) {
+        console.error("❌ Signature API returned success=false");
+        alert("Signature error");
+        return;
+      }
+
+      const { signature, role } = result.data;
+
+      console.log("🔍 --- SIGNATURE ANALYSIS ---");
+      console.log("1. Full Signature:", signature);
+
+      console.log("🧩 Creating Zoom Embedded Client...");
+      const client = ZoomMtgEmbedded.createClient();
+      console.log("🧩 Client Object:", client);
+
+      const zoomRoot = document.getElementById("zoom-root");
+      console.log("📍 Zoom Root Element:", zoomRoot);
+      if (!zoomRoot) {
+        console.error("❌ zoom-root element nahi mila! Rendering rukk gayi hai.");
+        return;
+      }
+
+      console.log("⚙️ Initializing Zoom Client...");
+      client.init({
+        zoomAppRoot: zoomRoot,
+        language: "en-US",
+      });
+
+      client.join({
+        signature: signature,
+        meetingNumber: meetingNumber,
+        passWord: staticPassword,
+        userName: role === 1 ? "Teacher" : "Student",
+        role: parseInt(role),
+        success: (s) => console.log("Meeting Joined 🎉", s),
+        error: (e) => {
+          console.error("❌ Join Error Detail:", e);
+          if (e.errorCode === 3004)
+            console.log(
+              "HINT: Agar portal par password sahi hai, toh backend signature check karein.",
+            );
+        },
+      });
+    } catch (err) {
+      console.error("💥 CRITICAL JS ERROR:", err);
+    }
   };
+
+  return <div id="zoom-root" style={{ width: "100%", height: "600px" }} />;
 };
 
 export default ZoomMeetings;
